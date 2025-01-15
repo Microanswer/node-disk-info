@@ -18,7 +18,13 @@ export declare class Utils {
     /**
      * Executes a command in SO console.
      *
-     * @param {Buffer} command: Command to execute.
+     * @param command command: Command to execute.
      */
     static execute(command: string): Buffer;
+    /**
+     * Executes a command in SO console.
+     *
+     * @param command command: Command to execute.
+     */
+    static executAsync(command: string): Promise<string>;
 }

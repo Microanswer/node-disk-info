@@ -1,5 +1,10 @@
 # Node disk info
 
+> 我发现此仓库在通过 Promise 的方式获取磁盘信息时，仍然使用的同步执行命令 execSync函数去获取磁盘信息，这使得程序会在此处阻塞。我fork此仓库将通过 Promise 方式获取磁盘信息的底层调用修改为了通过 exec 函数去开启异步进程获取，防止阻塞。此修改仅限Win32平台
+>
+> I discovered that this repository, when obtaining disk information through Promises, still uses the synchronous execution command `execSync` function to get disk information, which causes the program to block at this point. I forked this repository and modified the underlying calls for obtaining disk information through Promises to use the `exec` function to start an asynchronous process to avoid blocking. This modification is limited to the Win32 platform.
+
+
 Node module to get disk information in Windows, Linux, Mac, FreeBSD & OpenBSD. It works with Electron. The library will call system command to get drives info, parse the results and load info in array. Inspired by [diskinfo](https://github.com/BenoitGauthier/diskinfo).
 
 [![Build Status](https://travis-ci.org/cristiammercado/node-disk-info.svg?branch=master)](https://travis-ci.org/cristiammercado/node-disk-info)

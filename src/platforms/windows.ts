@@ -9,35 +9,9 @@ import iconv from 'iconv-lite';
  */
 export class Windows {
 
-    /**
-     * Execute specific Windows command to get disk info.
-     *
-     * @return {Drive[]} List of drives and their info.
-     */
-    public static run(): Drive[] {
-
+    private static parseCommandResponse(str: string): Drive[] {
         const drives: Drive[] = [];
-        let buffer = Utils.execute(Constants.WINDOWS_COMMAND);
-        
-        const cp = Utils.chcp();
-        let encoding = '';
-        switch (cp) {
-            case '65000': // UTF-7
-                encoding = 'UTF-7';
-                break;
-            case '65001': // UTF-8
-                encoding = 'UTF-8';
-                break;   
-            default: // Other Encoding
-                if (/^-?[\d.]+(?:e-?\d+)?$/.test(cp)) {
-                    encoding = 'cp' + cp;
-                } else {
-                    encoding = cp;
-                }
-        }
-        buffer = iconv.encode(iconv.decode(buffer, encoding),'UTF-8');
-
-        const lines = buffer.toString().split('\r\r\n');
+        const lines = str.split('\r\r\n');
 
         let newDiskIteration = false;
 
@@ -104,6 +78,42 @@ export class Windows {
         });
 
         return drives;
+    }
+
+    /**
+     * Execute specific Windows command to get disk info.
+     *
+     * @return {Drive[]} List of drives and their info.
+     */
+    public static run(): Drive[] {
+
+        let buffer = Utils.execute(Constants.WINDOWS_COMMAND);
+
+        const cp = Utils.chcp();
+        let encoding = '';
+        switch (cp) {
+            case '65000': // UTF-7
+                encoding = 'UTF-7';
+                break;
+            case '65001': // UTF-8
+                encoding = 'UTF-8';
+                break;
+            default: // Other Encoding
+                if (/^-?[\d.]+(?:e-?\d+)?$/.test(cp)) {
+                    encoding = 'cp' + cp;
+                } else {
+                    encoding = cp;
+                }
+        }
+        let commandResponse = iconv.encode(iconv.decode(buffer, encoding),'UTF-8').toString();
+
+
+        return Windows.parseCommandResponse(commandResponse);
+    }
+
+    public static async runAsync(): Promise<Drive[]> {
+        let commandResponse = await Utils.executAsync(Constants.WINDOWS_COMMAND);
+        return Windows.parseCommandResponse(commandResponse);
     }
 
 }
