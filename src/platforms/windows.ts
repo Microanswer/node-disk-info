@@ -11,71 +11,22 @@ export class Windows {
 
     private static parseCommandResponse(str: string): Drive[] {
         const drives: Drive[] = [];
-        const lines = str.split('\r\r\n');
 
-        let newDiskIteration = false;
+        const diskInfoArr: any[] = JSON.parse(str);
 
-        let caption: string = '';
-        let description: string = '';
-        let freeSpace: number = 0;
-        let size: number = 0;
+        for (let i = 0; i < diskInfoArr.length; i++) {
+            let diskinfo = diskInfoArr[i];
+            let size = diskinfo.Used + diskinfo.Free;
+            drives.push(new Drive(
+                "LocalDriver",
+                size,
+                diskinfo.Used,
+                diskinfo.Free,
+                Math.round((diskinfo.Used / size) * 100) + '%',
+                diskinfo.Name + ":"
+            ))
 
-        lines.forEach((value) => {
-
-            if (value !== '') {
-
-                const tokens = value.split('=');
-                const section = tokens[0];
-                const data = tokens[1];
-
-                switch (section) {
-                    case 'Caption':
-                        caption = data;
-                        newDiskIteration = true;
-                        break;
-                    case 'Description':
-                        description = data;
-                        break;
-                    case 'FreeSpace':
-                        freeSpace = isNaN(parseFloat(data)) ? 0 : +data;
-                        break;
-                    case 'Size':
-                        size = isNaN(parseFloat(data)) ? 0 : +data;
-                        break;
-                }
-
-            } else {
-
-                if (newDiskIteration) {
-
-                    const used: number = (size - freeSpace);
-
-                    let percent = '0%';
-
-                    if (size > 0) {
-                        percent = Math.round((used / size) * 100) + '%';
-                    }
-
-                    const d = new Drive(
-                        description,
-                        size,
-                        used,
-                        freeSpace,
-                        percent,
-                        caption);
-
-                    drives.push(d);
-
-                    newDiskIteration = false;
-                    caption = '';
-                    description = '';
-                    freeSpace = 0;
-                    size = 0;
-                }
-
-            }
-
-        });
+        }
 
         return drives;
     }

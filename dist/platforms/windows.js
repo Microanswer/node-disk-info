@@ -52,50 +52,12 @@ var Windows = /** @class */ (function () {
     }
     Windows.parseCommandResponse = function (str) {
         var drives = [];
-        var lines = str.split('\r\r\n');
-        var newDiskIteration = false;
-        var caption = '';
-        var description = '';
-        var freeSpace = 0;
-        var size = 0;
-        lines.forEach(function (value) {
-            if (value !== '') {
-                var tokens = value.split('=');
-                var section = tokens[0];
-                var data = tokens[1];
-                switch (section) {
-                    case 'Caption':
-                        caption = data;
-                        newDiskIteration = true;
-                        break;
-                    case 'Description':
-                        description = data;
-                        break;
-                    case 'FreeSpace':
-                        freeSpace = isNaN(parseFloat(data)) ? 0 : +data;
-                        break;
-                    case 'Size':
-                        size = isNaN(parseFloat(data)) ? 0 : +data;
-                        break;
-                }
-            }
-            else {
-                if (newDiskIteration) {
-                    var used = (size - freeSpace);
-                    var percent = '0%';
-                    if (size > 0) {
-                        percent = Math.round((used / size) * 100) + '%';
-                    }
-                    var d = new drive_1.default(description, size, used, freeSpace, percent, caption);
-                    drives.push(d);
-                    newDiskIteration = false;
-                    caption = '';
-                    description = '';
-                    freeSpace = 0;
-                    size = 0;
-                }
-            }
-        });
+        var diskInfoArr = JSON.parse(str);
+        for (var i = 0; i < diskInfoArr.length; i++) {
+            var diskinfo = diskInfoArr[i];
+            var size = diskinfo.Used + diskinfo.Free;
+            drives.push(new drive_1.default("LocalDriver", size, diskinfo.Used, diskinfo.Free, Math.round((diskinfo.Used / size) * 100) + '%', diskinfo.Name + ":"));
+        }
         return drives;
     };
     /**
