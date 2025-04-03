@@ -53,8 +53,8 @@ var Windows = /** @class */ (function () {
     Windows.parseCommandResponse = function (str) {
         var drives = [];
         var diskInfoArr = JSON.parse(str);
-        for (var i = 0; i < diskInfoArr.length; i++) {
-            var diskinfo = diskInfoArr[i];
+        for (var i = 0; i < diskInfoArr.value.length; i++) {
+            var diskinfo = diskInfoArr.value[i];
             var size = diskinfo.Used + diskinfo.Free;
             drives.push(new drive_1.default("LocalDriver", size, diskinfo.Used, diskinfo.Free, Math.round((diskinfo.Used / size) * 100) + '%', diskinfo.Name + ":"));
         }

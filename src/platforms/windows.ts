@@ -12,10 +12,13 @@ export class Windows {
     private static parseCommandResponse(str: string): Drive[] {
         const drives: Drive[] = [];
 
-        const diskInfoArr: any[] = JSON.parse(str);
+        const diskInfoArr: {
+            value: {Name:string,Used: number, Free: number}[],
+            Count: number,
+        } = JSON.parse(str);
 
-        for (let i = 0; i < diskInfoArr.length; i++) {
-            let diskinfo = diskInfoArr[i];
+        for (let i = 0; i < diskInfoArr.value.length; i++) {
+            let diskinfo = diskInfoArr.value[i];
             let size = diskinfo.Used + diskinfo.Free;
             drives.push(new Drive(
                 "LocalDriver",

@@ -11,7 +11,7 @@ export class Constants {
     /**
      * Command to execute on Windows.
      */
-    public static readonly WINDOWS_COMMAND: string = 'powershell "get-psdrive  -psprovider filesystem | select-object name,used,free | ConvertTo-Json"';
+    public static readonly WINDOWS_COMMAND: string = 'powershell ",@(get-psdrive  -psprovider filesystem | select-object name,used,free) | ConvertTo-Json"';
 
     /**
      * Command to execute on Linux.
