@@ -14,7 +14,7 @@ var Constants = /** @class */ (function () {
     /**
      * Command to execute on Windows.
      */
-    Constants.WINDOWS_COMMAND = 'powershell ",@(get-psdrive  -psprovider filesystem | select-object name,used,free) | ConvertTo-Json"';
+    Constants.WINDOWS_COMMAND = 'powershell -Command ",@(get-psdrive  -psprovider filesystem | select-object name,used,free) | ConvertTo-Json"';
     /**
      * Command to execute on Linux.
      */

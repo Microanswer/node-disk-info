@@ -15,10 +15,22 @@ export class Windows {
         const diskInfoArr: {
             value: {Name:string,Used: number, Free: number}[],
             Count: number,
-        } = JSON.parse(str);
+        } | {Name:string,Used: number, Free: number}[] = JSON.parse(str);
 
-        for (let i = 0; i < diskInfoArr.value.length; i++) {
-            let diskinfo = diskInfoArr.value[i];
+        let values
+        if ("value" in diskInfoArr) {
+            values = diskInfoArr["value"] as {Name:string,Used: number, Free: number}[]
+        } else {
+            values = diskInfoArr as {Name:string,Used: number, Free: number}[]
+        }
+
+        for (let i = 0; i < values.length; i++) {
+            let diskinfo = values[i];
+
+            if (diskinfo.Used == null || diskinfo.Free == null) {
+                continue;
+            }
+
             let size = diskinfo.Used + diskinfo.Free;
             drives.push(new Drive(
                 "LocalDriver",
