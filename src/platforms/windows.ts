@@ -64,6 +64,9 @@ export class Windows {
             case '65001': // UTF-8
                 encoding = 'UTF-8';
                 break;
+            case '936': // GBK
+                encoding = 'GBK';
+                break;
             default: // Other Encoding
                 if (/^-?[\d.]+(?:e-?\d+)?$/.test(cp)) {
                     encoding = 'cp' + cp;

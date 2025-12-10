@@ -7,17 +7,9 @@ exports.Darwin = void 0;
 var constants_1 = require("../utils/constants");
 var drive_1 = __importDefault(require("../classes/drive"));
 var utils_1 = require("../utils/utils");
-/**
- * Class with OSX specific logic to get disk info.
- */
-var Darwin = /** @class */ (function () {
+var Darwin = (function () {
     function Darwin() {
     }
-    /**
-     * Execute specific OSX command to get disk info.
-     *
-     * @return {Drive[]} List of drives and their info.
-     */
     Darwin.run = function () {
         var drives = [];
         var buffer = utils_1.Utils.execute(constants_1.Constants.DARWIN_COMMAND);

@@ -7,17 +7,9 @@ exports.Linux = void 0;
 var constants_1 = require("../utils/constants");
 var drive_1 = __importDefault(require("../classes/drive"));
 var utils_1 = require("../utils/utils");
-/**
- * Class with Linux specific logic to get disk info.
- */
-var Linux = /** @class */ (function () {
+var Linux = (function () {
     function Linux() {
     }
-    /**
-     * Execute specific Linux command to get disk info.
-     *
-     * @return {Drive[]} List of drives and their info.
-     */
     Linux.run = function () {
         var drives = [];
         var buffer = utils_1.Utils.execute(constants_1.Constants.LINUX_COMMAND);

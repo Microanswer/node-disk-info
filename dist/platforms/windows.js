@@ -44,10 +44,7 @@ var constants_1 = require("../utils/constants");
 var drive_1 = __importDefault(require("../classes/drive"));
 var utils_1 = require("../utils/utils");
 var iconv_lite_1 = __importDefault(require("iconv-lite"));
-/**
- * Class with Windows specific logic to get disk info.
- */
-var Windows = /** @class */ (function () {
+var Windows = (function () {
     function Windows() {
     }
     Windows.parseCommandResponse = function (str) {
@@ -70,23 +67,21 @@ var Windows = /** @class */ (function () {
         }
         return drives;
     };
-    /**
-     * Execute specific Windows command to get disk info.
-     *
-     * @return {Drive[]} List of drives and their info.
-     */
     Windows.run = function () {
         var buffer = utils_1.Utils.execute(constants_1.Constants.WINDOWS_COMMAND);
         var cp = utils_1.Utils.chcp();
         var encoding = '';
         switch (cp) {
-            case '65000': // UTF-7
+            case '65000':
                 encoding = 'UTF-7';
                 break;
-            case '65001': // UTF-8
+            case '65001':
                 encoding = 'UTF-8';
                 break;
-            default: // Other Encoding
+            case '936':
+                encoding = 'GBK';
+                break;
+            default:
                 if (/^-?[\d.]+(?:e-?\d+)?$/.test(cp)) {
                     encoding = 'cp' + cp;
                 }
@@ -102,10 +97,10 @@ var Windows = /** @class */ (function () {
             var commandResponse;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, utils_1.Utils.executAsync(constants_1.Constants.WINDOWS_COMMAND)];
+                    case 0: return [4, utils_1.Utils.executAsync(constants_1.Constants.WINDOWS_COMMAND)];
                     case 1:
                         commandResponse = _a.sent();
-                        return [2 /*return*/, Windows.parseCommandResponse(commandResponse)];
+                        return [2, Windows.parseCommandResponse(commandResponse)];
                 }
             });
         });

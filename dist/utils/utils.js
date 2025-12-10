@@ -62,40 +62,27 @@ exports.Utils = void 0;
 var os = __importStar(require("os"));
 var child_process_1 = require("child_process");
 var iconv_lite_1 = __importDefault(require("iconv-lite"));
-/**
- * encoding for Win32
- */
 var encoding = null;
-/**
- * Class with utilitary methods.
- */
-var Utils = /** @class */ (function () {
+var Utils = (function () {
     function Utils() {
     }
-    /**
-     * Detects current platform.
-     *
-     * @return {string} Platform: win32, linux, darwin.
-     */
     Utils.detectPlatform = function () {
         return os.platform().toLowerCase();
     };
-    /**
-     * Get chcp value (only for Win32 platform).
-     *
-     * @return {string} Platform: win32.
-     */
     Utils.chcp = function () {
         if (!encoding) {
             var cp = child_process_1.execSync('chcp').toString().split(':')[1].trim();
             switch (cp) {
-                case '65000': // UTF-7
+                case '65000':
                     encoding = 'UTF-7';
                     break;
-                case '65001': // UTF-8
+                case '65001':
                     encoding = 'UTF-8';
                     break;
-                default: // Other Encoding
+                case '936':
+                    encoding = 'GBK';
+                    break;
+                default:
                     if (/^-?[\d.]+(?:e-?\d+)?$/.test(cp)) {
                         encoding = 'cp' + cp;
                     }
@@ -106,36 +93,30 @@ var Utils = /** @class */ (function () {
         }
         return encoding;
     };
-    /**
-     * Executes a command in SO console.
-     *
-     * @param command command: Command to execute.
-     */
     Utils.execute = function (command) {
         return child_process_1.execSync(command, { windowsHide: true, encoding: 'buffer' });
     };
-    /**
-     * Executes a command in SO console.
-     *
-     * @param command command: Command to execute.
-     */
     Utils.executAsync = function (command) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         child_process_1.exec(command, { encoding: "buffer" }, function (err, stdout, stderr) {
+                            var encoding = Utils.chcp();
                             if (err) {
-                                reject(err);
+                                if (err.code !== 0) {
+                                    if (stderr != null && stderr.length > 0) {
+                                        reject(new Error(iconv_lite_1.default.decode(stderr, encoding).trim()));
+                                    }
+                                    else {
+                                        reject(err);
+                                    }
+                                }
+                                else {
+                                    reject(err);
+                                }
                                 return;
                             }
-                            if (stderr.length > 0) {
-                                var errStr = iconv_lite_1.default.decode(stderr, Utils.chcp()).trim();
-                                if (errStr) {
-                                    reject(new Error(errStr));
-                                    return;
-                                }
-                            }
-                            resolve(iconv_lite_1.default.decode(stdout, Utils.chcp()));
+                            resolve(iconv_lite_1.default.decode(stdout, encoding));
                         });
                     })];
             });

@@ -5,7 +5,7 @@ import iconv from 'iconv-lite';
 /**
  * encoding for Win32
  */
-let encoding: string|null = null;
+let encoding: string | null = null;
 
 /**
  * Class with utilitary methods.
@@ -36,6 +36,9 @@ export class Utils {
                 case '65001': // UTF-8
                     encoding = 'UTF-8';
                     break;
+                case '936': // GBK
+                    encoding = 'GBK';
+                    break;
                 default: // Other Encoding
                     if (/^-?[\d.]+(?:e-?\d+)?$/.test(cp)) {
                         encoding = 'cp' + cp;
@@ -65,20 +68,23 @@ export class Utils {
     public static async executAsync(command: string): Promise<string> {
         return new Promise((resolve, reject) => {
             exec(command, {encoding: "buffer"}, (err, stdout, stderr) => {
+                let encoding = Utils.chcp()
                 if (err) {
-                    reject(err);
+                    if (err.code !== 0) {
+                        // exit code !== 0 → 子进程执行失败
+                        if (stderr != null && stderr.length > 0) {
+                            reject(new Error(iconv.decode(stderr, encoding).trim()))
+                        } else {
+                            reject(err);
+                        }
+                    } else {
+                        // Node/spawn error → 真正的错误
+                        reject(err);
+                    }
                     return;
                 }
 
-                if (stderr.length > 0) {
-                    let errStr = iconv.decode(stderr, Utils.chcp()).trim();
-                    if (errStr) {
-                        reject(new Error(errStr));
-                        return;
-                    }
-                }
-
-                resolve(iconv.decode(stdout, Utils.chcp()));
+                resolve(iconv.decode(stdout, encoding));
             });
         });
     }
